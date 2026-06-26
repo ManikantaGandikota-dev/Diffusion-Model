@@ -3,7 +3,7 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 
 # Define the data transformations
-transform = transforms.Compose([
+train_transform = transforms.Compose([
     transforms.Resize((32, 32)),  # Ensure images are 32x32 pixels
     transforms.Grayscale(num_output_channels=3),  # Ensure images are grayscale
     transforms.RandomRotation(degrees=15),  # Data augmentation: random rotation
@@ -11,12 +11,19 @@ transform = transforms.Compose([
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # Normalize to [-1, 1]
 ])
 
+test_transform = transforms.Compose([
+    transforms.Resize((32, 32)),
+    transforms.Grayscale(num_output_channels=3),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+])
+
 # Load MNIST training dataset
 train_dataset = datasets.MNIST(
     root='./data',
     train=True,
     download=True,
-    transform=transform
+    transform=train_transform
 )
 
 # Load MNIST test dataset
@@ -24,7 +31,7 @@ test_dataset = datasets.MNIST(
     root='./data',
     train=False,
     download=True,
-    transform=transform
+    transform=test_transform
 )
 
 # Create data loaders
