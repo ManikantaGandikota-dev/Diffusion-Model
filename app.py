@@ -7,6 +7,7 @@ from pathlib import Path
 
 from Transformer import VisionTransformer
 from Diffusion_Transformer import DiffusionTransformer
+from huggingface_hub import hf_hub_download
 
 epoch = 1000
 img_size = 32
@@ -22,8 +23,10 @@ num_classes = 10
 cfg_prob = 0.1 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-BASE_DIR = Path(__file__).resolve().parent
-model_path = BASE_DIR / "dit_mnist.pth"
+model_path = hf_hub_download(
+    repo_id="Manikantagandikota143/Diffusion_model",
+    filename="dit_mnist.pth"
+)
 
 model = VisionTransformer(
     img_size,
@@ -35,9 +38,7 @@ model = VisionTransformer(
     num_classes=num_classes,
 ).to(device)
 
-model.load_state_dict(
-    torch.load(model_path, map_location=device)
-)
+model.load_state_dict(torch.load(model_path, map_location=device))
 
 model.eval()
 
