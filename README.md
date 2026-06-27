@@ -1,6 +1,6 @@
 ---
 title: Diffusion Model
-emoji: 🤖
+emoji: Image
 colorFrom: blue
 colorTo: purple
 sdk: gradio
