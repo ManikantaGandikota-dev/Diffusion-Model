@@ -1,0 +1,8 @@
+torch
+torchvision
+gradio>=5.0
+numpy
+Pillow
+matplotlib
+PIL
+pathlib

@@ -13,12 +13,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = VisionTransformer(img_size, patch_size, in_channels, dim, heads, layers, num_classes=num_classes).to(device)
 
 
-state_dict = torch.load(
-    "/kaggle/input/datasets/manigandikota/chech-mnist2/dit_mnist.pth",
-    map_location=device,
-)
-
-
 state_dict = torch.load("/kaggle/input/datasets/manigandikota/chech-mnist2/dit_mnist.pth", map_location=device)
 
 model.load_state_dict(state_dict)

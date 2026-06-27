@@ -24,7 +24,7 @@ if torch.cuda.is_available():
     print("CUDA is available. Training on GPU.")
 
 model = VisionTransformer(img_size, patch_size, in_channels, dim, heads, layers, num_classes=num_classes).to(device)
-diffusion = DiffusionTransformer(timesteps)
+diffusion = DiffusionTransformer(timesteps, device=device).to(device)
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 criterion = nn.MSELoss()
 scaler = torch.amp.GradScaler('cuda')
@@ -42,11 +42,11 @@ for i in range(epoch+1):
         # Classifier-free guidance: sometimes train without labels
         if np.random.rand() < cfg_prob:
             # Train without conditioning (unconditional)
-            outputs = model(noisy_images, class_labels=None)
+            outputs = model(noisy_images,t, class_labels=None)
             loss = criterion(outputs, noise)
         else:
             # Train with conditioning (conditional)
-            outputs = model(noisy_images, class_labels=labels)
+            outputs = model(noisy_images, t, class_labels=labels)
             loss = criterion(outputs, noise)
         
         scaler.scale(loss).backward()
@@ -66,7 +66,7 @@ for i in range(epoch+1):
                 noisy_images, noise = diffusion.forward(images, t)
                 
                 # Evaluate with conditioning
-                outputs = model(noisy_images, class_labels=labels)
+                outputs = model(noisy_images, t, class_labels=labels)
                 loss = criterion(outputs, images)
                 test_loss += loss.item()
 
