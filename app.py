@@ -7,8 +7,19 @@ from pathlib import Path
 
 from Transformer import VisionTransformer
 from Diffusion_Transformer import DiffusionTransformer
-from Train import img_size, patch_size, in_channels, dim, heads, layers, num_classes, timesteps
 
+epoch = 1000
+img_size = 32
+display_size = 256
+patch_size = 4
+in_channels = 3
+dim = 512
+heads = 8
+layers = 6
+timesteps = 1000
+learning_rate = 1e-4
+num_classes = 10
+cfg_prob = 0.1 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -31,10 +42,7 @@ model.load_state_dict(
 model.eval()
 
 
-diffusion = DiffusionTransformer(
-    timesteps=timesteps,
-    device=device,
-)
+diffusion = DiffusionTransformer(timesteps,device=device).to(device)
 
 @torch.no_grad()
 def generate_image(label):
@@ -60,8 +68,9 @@ def generate_image(label):
             img = (img.clamp(-1, 1) + 1) / 2
             img = img.permute(1, 2, 0).numpy()
             img = (img * 255).astype(np.uint8)
+            img = Image.fromarray(img).resize((display_size, display_size), resample=Image.BICUBIC)
 
-            yield Image.fromarray(img)
+            yield img
 
 demo = gr.Interface(
     fn=generate_image,
